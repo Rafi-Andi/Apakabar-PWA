@@ -80,7 +80,7 @@ onMounted(() => {
 <style scoped>
 .game-container {
   width: 100%;
-  max-width: 480px; /* Ikuti aturan 480px */
+  max-width: 480px;
   height: 100vh;
   margin: auto;
   overflow: hidden;
@@ -89,7 +89,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   border: none;
-  flex: 1; /* Mengambil sisa ruang */
+  flex: 1;
 }
 main {
   max-width: 480px;
