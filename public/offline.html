@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Offline Mode</title>
+    <style>
+        :root {
+            --primary: #FFA500;
+            --bg-dark: #1A1A1A;
+            --surface-dark: #262626;
+            --text-dark: #E0E0E0;
+            --text-dim: #A0A0A0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+
+        .back-btn { font-size: 24px; cursor: pointer; width: 40px; }
+
+        h2 { flex: 1; text-align: center; font-size: 18px; margin-right: 40px; }
+
+        /* Icon Connection */
+        .status-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .wifi-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 165, 0, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        /* Game Area */
+        .game-card {
+            background: var(--surface-dark);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .game-header {
+            padding: 10px 15px;
+            background: #333;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            font-weight: bold;
+            color: var(--text-dim);
+        }
+
+        canvas {
+            display: block;
+            background: #0f172a;
+            width: 100%;
+            aspect-ratio: 4/5;
+            cursor: none;
+        }
+
+        /* Menu Overlay */
+        #overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .btn-start {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* Buttons Bottom */
+        .footer {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-bottom: 20px;
+        }
+
+        .btn-retry {
+            background: var(--primary);
+            color: white;
+            border: none;
+            height: 48px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-saved {
+            background: transparent;
+            color: var(--primary);
+            border: none;
+            height: 40px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="back-btn">←</div>
+        <h2>Offline Mode</h2>
+    </header>
+
+    <div class="status-section">
+        <div class="wifi-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.36c.22-.22.47-.44.73-.64m4.19-1.31c1.55-.51 3.23-.73 4.93-.71a14.2 14.2 0 0 1 5.61 1.25M17.41 6.59l4.23-4.23M1.42 22.58l21.16-21.16M11.51 20.17a2.03 2.03 0 0 1-2.82 0l-3.23-3.23M14.33 14.33l1.86-1.86a2.03 2.03 0 0 0 0-2.82l-1.01-1.01M6.28 12.3l-1.81-1.81a2.03 2.03 0 0 1 0-2.82l1.01-1.01"/></svg>
+        </div>
+        <div>
+            <h1 style="font-size: 20px; margin-bottom: 5px;">No Internet Connection</h1>
+            <p style="color: var(--text-dim); font-size: 14px;">Beat the high score while we reconnect!</p>
+        </div>
+    </div>
+
+    <div class="game-card">
+        <div class="game-header">
+            <div style="display:flex; gap:5px">
+                <div style="width:8px; height:8px; border-radius:50%; background:#ff5f56"></div>
+                <div style="width:8px; height:8px; border-radius:50%; background:#ffbd2e"></div>
+                <div style="width:8px; height:8px; border-radius:50%; background:#27c93f"></div>
+            </div>
+            <span>RETRO PONG</span>
+        </div>
+        
+        <div style="position: relative;">
+            <canvas id="pongCanvas"></canvas>
+            <div id="overlay">
+                <h3 id="statusText" style="color: white; margin-bottom: 5px;">Pixel Pong</h3>
+                <button class="btn-start" onclick="startGame()">Start Game</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <button class="btn-retry" onclick="location.reload()">Retry Connection</button>
+        <button class="btn-saved">Go to Saved Articles →</button>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('pongCanvas');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
+    const statusText = document.getElementById('statusText');
+
+    // Ukuran canvas
+    canvas.width = 360;
+    canvas.height = 450;
+
+    const paddleWidth = 10, paddleHeight = 60;
+    const ballSize = 8;
+    
+    let playerY = (canvas.height - paddleHeight) / 2;
+    let aiY = (canvas.height - paddleHeight) / 2;
+    let ballX = canvas.width / 2, ballY = canvas.height / 2;
+    let ballDX = 4, ballDY = 4;
+    let playerScore = 0, aiScore = 0;
+    let gameActive = false;
+
+    // Kontrol Mouse & Touch
+    const movePaddle = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        playerY = (clientY - rect.top) - paddleHeight / 2;
+    };
+
+    canvas.addEventListener('mousemove', movePaddle);
+    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); movePaddle(e); }, {passive: false});
+
+    function resetBall() {
+        ballX = canvas.width / 2;
+        ballY = canvas.height / 2;
+        ballDX = (Math.random() > 0.5 ? 4 : -4);
+        ballDY = (Math.random() - 0.5) * 8;
+    }
+
+    function startGame() {
+        playerScore = 0;
+        aiScore = 0;
+        gameActive = true;
+        overlay.style.display = 'none';
+        resetBall();
+        draw();
+    }
+
+    function draw() {
+        if (!gameActive) return;
+
+        // Background
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Net Line
+        ctx.setLineDash([10, 10]);
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2, 0);
+        ctx.lineTo(canvas.width / 2, canvas.height);
+        ctx.stroke();
+
+        // Paddles
+        ctx.fillStyle = '#FFA500'; // Player
+        ctx.fillRect(10, playerY, paddleWidth, paddleHeight);
+        ctx.fillStyle = '#FFFFFF'; // AI
+        ctx.fillRect(canvas.width - 20, aiY, paddleWidth, paddleHeight);
+
+        // Ball
+        ctx.beginPath();
+        ctx.arc(ballX, ballY, ballSize/2, 0, Math.PI*2);
+        ctx.fill();
+
+        // Skor
+        ctx.font = '40px Arial';
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        ctx.fillText(playerScore, canvas.width / 4, 50);
+        ctx.fillText(aiScore, (canvas.width / 4) * 3 - 20, 50);
+
+        // Gerak Bola
+        ballX += ballDX;
+        ballY += ballDY;
+
+        // Pantulan Dinding
+        if (ballY <= 0 || ballY >= canvas.height) ballDY *= -1;
+
+        // AI Logic
+        let aiCenter = aiY + paddleHeight / 2;
+        if (aiCenter < ballY - 10) aiY += 4;
+        else if (aiCenter > ballY + 10) aiY -= 4;
+
+        // Tabrakan Paddle Player
+        if (ballX <= 25 && ballY > playerY && ballY < playerY + paddleHeight) {
+            ballDX = Math.abs(ballDX) * 1.05;
+            ballDY = (ballY - (playerY + paddleHeight / 2)) * 0.3;
+        }
+
+        // Tabrakan Paddle AI
+        if (ballX >= canvas.width - 25 && ballY > aiY && ballY < aiY + paddleHeight) {
+            ballDX = -Math.abs(ballDX) * 1.05;
+            ballDY = (ballY - (aiY + paddleHeight / 2)) * 0.3;
+        }
+
+        // Skor Berubah
+        if (ballX < 0) {
+            aiScore++;
+            checkEnd();
+        } else if (ballX > canvas.width) {
+            playerScore++;
+            checkEnd();
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    function checkEnd() {
+        if (playerScore >= 5 || aiScore >= 5) {
+            gameActive = false;
+            overlay.style.display = 'flex';
+            statusText.innerText = playerScore >= 5 ? "You Win!" : "Game Over";
+        } else {
+            resetBall();
+        }
+    }
+</script>
+
+</body>
+</html>
